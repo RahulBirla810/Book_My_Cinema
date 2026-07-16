@@ -1,0 +1,132 @@
+.custom-loader {
+  width: 50px;
+  height: 50px;
+  display: grid;
+}
+
+.custom-loader::before,
+.custom-loader::after {
+  content: "";
+  grid-area: 1/1;
+  --c: radial-gradient(farthest-side, #766df4 92%, #0000);
+  background: var(--c) 50% 0, var(--c) 50% 100%, var(--c) 100% 50%,
+    var(--c) 0 50%;
+  background-size: 12px 12px;
+  background-repeat: no-repeat;
+  animation: s2 1s infinite;
+}
+
+.custom-loader::before {
+  margin: 4px;
+  filter: hue-rotate(45deg);
+  background-size: 8px 8px;
+  animation-timing-function: linear;
+}
+
+@keyframes s2 {
+  100% {
+    transform: rotate(0.5turn);
+  }
+}
+
+.custom-bg-image {
+  background-image: linear-gradient(90deg, rgb(26, 26, 26) 24.97%, rgb(26, 26, 26) 38.3%, rgba(26, 26, 26, 0.04) 97.47%, rgb(26, 26, 26) 100%),
+    url('https://assets-in.bmscdn.com/iedb/movies/images/mobile/listing/xxlarge/bhool-bhulaiyaa-3-et00353996-1728474428.jpg');
+}
+
+@media (max-width: 640px) {
+  .custom-bg-image {
+    background-image: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-banner-height {
+    height: 155px
+  }
+}
+
+@media (max-width: 500px) {
+  .home-banner-height {
+    height: 135px
+  }
+}
+
+.siteTitle {
+  color: yellow;
+  -webkit-box-reflect: below 1px linear-gradient(transparent, #0008);
+  line-height: 0.78em;
+  outline: none;
+  animation: animate 5s linear infinite;
+  /* Added 'infinite' for continuous animation */
+}
+
+@keyframes animate {
+  0% {
+    color: #0e3742;
+    text-shadow: none;
+  }
+
+  18.1%,
+  20.1%,
+  30%,
+  50%,
+  60.1%,
+  65%,
+  80.1%,
+  90%,
+  92.1%,
+  100% {
+    color: #fff;
+    text-shadow:
+      0 0 10px #03bcf4,
+      0 0 20px #03bcf4,
+      0 0 40px #03bcf4,
+      0 0 80px #03bcf4,
+      0 0 160px #03bcf4;
+  }
+}
+
+
+/* For the swiper container */
+.swiper-container {
+  width: 100%;
+  height: 300px;
+  /* Set a fixed height for the slider */
+}
+
+/* Style for each slider item */
+.slider-item {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* Style for images in the slider */
+.slider-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.5s ease;
+  /* Smooth animation */
+}
+
+/* Hover effect for images */
+.slider-item:hover .slider-image {
+  transform: scale(1.1);
+  /* Slight zoom effect */
+}
+
+/* Optional: Styling the pagination dots */
+.swiper-pagination-bullet {
+  background-color: #fff;
+  transition: background-color 0.3s;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #ff6347;
+  /* Active bullet color */
+}
