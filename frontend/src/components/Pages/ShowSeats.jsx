@@ -13,7 +13,7 @@ import {
 import { io } from "socket.io-client";
 import AxiosInstance from "../../redux/utils/apiConnector";
 
-const socket = io("http://localhost:5000", {
+const socket = io(process.env.REACT_APP_SOCKET_URL || "http://localhost:5000", {
   withCredentials: true,
   transports: ["websocket", "polling"],
 });

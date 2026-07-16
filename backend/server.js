@@ -11,10 +11,14 @@ const PORT = process.env.PORT || 5000;
 const http = require("http");
 const { Server } = require("socket.io");
 
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(",").map(url => url.trim()) 
+  : ["http://localhost:3000"];
+
 // middleware setup
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, // Allow cookies or headers like Authorization
   })
@@ -32,7 +36,7 @@ app.use(
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, // Allow cookies or headers like Authorization
   },
