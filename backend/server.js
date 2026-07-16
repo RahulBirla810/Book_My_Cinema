@@ -43,6 +43,7 @@ const io = new Server(server, {
   transports: ["websocket", "polling"], // Try WebSocket first, then fallback to polling
 });
 
+// Trigger fresh deployment on Render after Atlas IP Whitelist update
 console.log("Starting server...");
 
 // connections
