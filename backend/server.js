@@ -43,11 +43,17 @@ const io = new Server(server, {
   transports: ["websocket", "polling"], // Try WebSocket first, then fallback to polling
 });
 
+console.log("Starting server...");
+
 // connections
 dbConnect();
+
+console.log("Connecting to Cloudinary...");
 cloudinaryConnect();
+console.log("Cloudinary Connected");
 
 // importing routes
+console.log("Registering Routes...");
 const userRoutes = require("./routes/userRoute");
 const cinemaRoutes = require("./routes/cinemaRoute");
 const movieRoutes = require("./routes/movieRoute");
@@ -82,4 +88,5 @@ io.on("connection", (socket) => {
 });
 
 // start server
-server.listen(PORT, () => console.log(`Server is now running on port ${PORT}`));
+console.log("Starting HTTP Server...");
+server.listen(PORT, () => console.log(`Server listening on PORT ${PORT}`));

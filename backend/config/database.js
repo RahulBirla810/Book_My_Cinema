@@ -1,14 +1,17 @@
 const mongoose = require('mongoose');
 
 const dbConnect = () => {
-    mongoose.connect(process.env.MONGODB_URL)
+    console.log("Connecting to MongoDB...");
+    mongoose.connect(process.env.MONGODB_URL, {
+        serverSelectionTimeoutMS: 5000 // fail fast if database is unreachable (5 seconds timeout)
+    })
     .then(() => {
-        console.log("Database connection established");
+        console.log("MongoDB Connected");
     })
     .catch((error) => {
-        console.log("DB Connection Failed: ", error.message);
-        process.exit(1);
-    })
+        console.error("DB Connection Failed: ", error.message);
+        console.log("Allowing server to keep running even though MongoDB is temporarily unavailable...");
+    });
 }
 
 module.exports = dbConnect;
