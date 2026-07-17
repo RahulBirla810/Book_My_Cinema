@@ -15,10 +15,26 @@ const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(",").map(url => url.trim()) 
   : ["http://localhost:3000"];
 
+// Add direct Netlify site URL to allowed list
+allowedOrigins.push("https://bookmycinemaa.netlify.app");
+
+const corsOriginCheck = (origin, callback) => {
+  if (!origin) return callback(null, true);
+  const isAllowed = allowedOrigins.indexOf(origin) !== -1 || 
+                    origin.endsWith(".netlify.app") || 
+                    origin.endsWith(".onrender.com") ||
+                    origin.includes("localhost");
+  if (isAllowed) {
+    callback(null, true);
+  } else {
+    callback(null, false); // Fail silently for CORS rather than throwing server errors
+  }
+};
+
 // middleware setup
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: corsOriginCheck,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, // Allow cookies or headers like Authorization
   })
@@ -36,7 +52,7 @@ app.use(
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: corsOriginCheck,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true, // Allow cookies or headers like Authorization
   },
