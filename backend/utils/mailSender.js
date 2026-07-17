@@ -42,22 +42,34 @@ const mailSender = async (email, title, body) => {
       return info;
     } else {
       // Use configured SMTP details
-      transporter = nodemailer.createTransport({
+      const transportConfig = {
         host: process.env.MAIL_HOST,
+        port: parseInt(process.env.MAIL_PORT) || 587,
+        secure: process.env.MAIL_PORT === "465",
         auth: {
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PASS,
         },
-      });
+      };
+
+      // Gmail integration optimization to prevent Render port 25 blocking hang
+      if (process.env.MAIL_HOST && (process.env.MAIL_HOST.includes("gmail") || process.env.MAIL_HOST.includes("googlemail"))) {
+        delete transportConfig.host;
+        delete transportConfig.port;
+        delete transportConfig.secure;
+        transportConfig.service = "gmail";
+      }
+
+      transporter = nodemailer.createTransport(transportConfig);
 
       let info = await transporter.sendMail({
-        from: `Movie-Booker ${process.env.MAIL_USER}`,
+        from: `Movie-Booker <${process.env.MAIL_USER}>`,
         to: `${email}`,
         subject: `${title}`,
         html: `${body}`,
       });
 
-      console.log(`\n📧 Email sent successfully to ${email} (via ${process.env.MAIL_HOST})`);
+      console.log(`\n📧 Email sent successfully to ${email} (via ${process.env.MAIL_HOST || 'Gmail service'})`);
       return info;
     }
   } catch (error) {
@@ -67,4 +79,3 @@ const mailSender = async (email, title, body) => {
 };
 
 module.exports = mailSender;
-
