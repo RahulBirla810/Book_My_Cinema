@@ -33,6 +33,9 @@ const mailSender = async (email, title, body) => {
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PASS,
         },
+        connectionTimeout: 5000, // 5 seconds connection timeout
+        greetingTimeout: 5000,
+        socketTimeout: 5000,
       };
 
       // Force secure SMTPS (port 465) for Google SMTP on Render to bypass STARTTLS blocks

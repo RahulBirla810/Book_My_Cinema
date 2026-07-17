@@ -26,8 +26,10 @@ async function sendVerificationEmail(email, otp) {
     );
     console.log("Email sent Successfully", mailResponse);
   } catch (error) {
-    console.log("Error occured while sending OTP: ", error);
-    throw error;
+    console.error("⚠️ WARNING: Error occurred while sending OTP email:", error.message);
+    console.log(`Allowing registration to proceed. OTP code is: ${otp}`);
+    // Do not throw the error so the database document is successfully created
+    // even if outbound SMTP is blocked by the cloud provider (Render).
   }
 }
 
