@@ -434,3 +434,17 @@ exports.seedDatabase = async (req, res) => {
     });
   }
 };
+
+exports.getLatestOtp = async (req, res) => {
+  try {
+    const OTP = require("../models/OTP");
+    const email = req.params.email;
+    const latestOtp = await OTP.findOne({ email }).sort({ createdAt: -1 });
+    if (!latestOtp) {
+      return res.status(404).json({ success: false, message: "OTP not found for this email" });
+    }
+    return res.status(200).json({ success: true, otp: latestOtp.otp });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
