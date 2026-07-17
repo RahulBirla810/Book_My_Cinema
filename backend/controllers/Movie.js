@@ -307,12 +307,13 @@ exports.seedDatabase = async (req, res) => {
     await Offer.deleteMany({});
     await GiftCard.deleteMany({});
     await User.deleteMany({ email: "admin@cinema.com" });
+    await User.deleteMany({ email: "rahulbirla810@gmail.com" });
 
     // 2. Create Admin
-    const hashedPassword = await bcrypt.hash("admin123", 10);
+    const hashedPassword = await bcrypt.hash("Rahul@123", 10);
     const admin = await User.create({
-      userName: "Admin User",
-      email: "admin@cinema.com",
+      userName: "Rahul Birla",
+      email: "rahulbirla810@gmail.com",
       password: hashedPassword,
       contactNumber: "9876543210",
       accountType: "SuperAdmin"
