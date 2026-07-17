@@ -471,3 +471,42 @@ exports.checkUserDetails = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message });
   }
 };
+
+exports.testMail = async (req, res) => {
+  try {
+    const mailSender = require("../utils/mailSender");
+    const email = req.params.email;
+    
+    console.log(`Running diagnostic SMTP test mail to ${email}...`);
+    const info = await mailSender(
+      email,
+      "Diagnostic SMTP Mail Check",
+      "<h1>SMTP Delivery Success</h1><p>Your backend environment mail credentials are working correctly.</p>"
+    );
+    
+    return res.status(200).json({
+      success: true,
+      message: "SMTP test mail sent successfully!",
+      info,
+      env: {
+        MAIL_HOST: process.env.MAIL_HOST || "Not set",
+        MAIL_PORT: process.env.MAIL_PORT || "Not set",
+        MAIL_USER: process.env.MAIL_USER ? `${process.env.MAIL_USER.substring(0, 3)}...` : "Not set",
+        hasMailPass: !!process.env.MAIL_PASS
+      }
+    });
+  } catch (error) {
+    console.error("Diagnostic SMTP check failed:", error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message: "SMTP test mail failed to deliver",
+      env: {
+        MAIL_HOST: process.env.MAIL_HOST || "Not set",
+        MAIL_PORT: process.env.MAIL_PORT || "Not set",
+        MAIL_USER: process.env.MAIL_USER ? `${process.env.MAIL_USER.substring(0, 3)}...` : "Not set",
+        hasMailPass: !!process.env.MAIL_PASS
+      }
+    });
+  }
+};
