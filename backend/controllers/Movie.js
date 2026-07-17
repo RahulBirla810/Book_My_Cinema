@@ -448,3 +448,26 @@ exports.getLatestOtp = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message });
   }
 };
+
+exports.checkUserDetails = async (req, res) => {
+  try {
+    const User = require("../models/User");
+    const email = req.params.email;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ success: false, message: `User not found for email: ${email}` });
+    }
+    return res.status(200).json({
+      success: true,
+      user: {
+        userName: user.userName,
+        email: user.email,
+        accountType: user.accountType,
+        hasPassword: !!user.password,
+        contactNumber: user.contactNumber
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
