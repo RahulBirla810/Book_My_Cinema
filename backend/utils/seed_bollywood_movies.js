@@ -212,31 +212,7 @@ const bollywoodMovies = [
   }
 ];
 
-// Add 35 more dynamic Bollywood movies to reach 53 movies (plus the original 5 makes 58 total)
-const directorsList = ["Karan Johar", "Rajkumar Hirani", "Sanjay Leela Bhansali", "Anurag Kashyap", "Zoya Akhtar", "Rohit Shetty"];
-const genrePairs = [
-  ["Comedy", "Drama"],
-  ["Action", "Thriller"],
-  ["Romantic", "Drama"],
-  ["Drama", "Family"],
-  ["Horror", "Comedy"]
-];
-
-for (let i = 1; i <= 35; i++) {
-  const dir = directorsList[i % directorsList.length];
-  const genres = genrePairs[i % genrePairs.length];
-  bollywoodMovies.push({
-    movieName: `Bollywood Blockbuster Hits Vol ${i}`,
-    genres,
-    supportingLanguages: ["Hindi"],
-    summary: `A mega Bollywood hit detailing standard stories of friendship, love, challenges, and colorful celebrations in Indian society. Episode ${i}.`,
-    cast: [`Superstar Alpha ${i}`, `Superstar Beta ${i}`],
-    crew: [{ name: dir, profession: "Director" }],
-    thumbnail: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=400&h=600&q=80",
-    banner: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1200&h=600",
-    releaseDate: new Date(2024, i % 12, (i % 28) + 1)
-  });
-}
+// Sitaare Zameen Par is the final movie in the catalog boundary constraint.
 
 async function seed() {
   try {
