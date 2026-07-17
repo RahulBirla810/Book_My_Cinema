@@ -12,34 +12,17 @@ const mailSender = async (email, title, body) => {
       process.env.MAIL_PASS.includes("dummy");
 
     if (isDummy) {
-      // Programmatically create an Ethereal test SMTP account
-      let testAccount = await nodemailer.createTestAccount();
-      transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-          user: testAccount.user, // generated ethereal user
-          pass: testAccount.pass, // generated ethereal password
-        },
-      });
-
-      let info = await transporter.sendMail({
-        from: `"Movie-Booker Test" <${testAccount.user}>`,
-        to: `${email}`,
-        subject: `${title}`,
-        html: `${body}`,
-      });
-
       console.log("\n==================================================");
-      console.log("📧 Ethereal Test Email Sent Successfully!");
+      console.log("📝 DUMMY MODE ACTIVE (SMTP credentials missing/dummy)");
       console.log(`To: ${email}`);
       console.log(`Subject: ${title}`);
       console.log(`OTP/Body: ${body}`);
-      console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
       console.log("==================================================\n");
 
-      return info;
+      return {
+        messageId: "mock-message-id-" + Date.now(),
+        preview: "Mock preview - check server logs for OTP code"
+      };
     } else {
       // Use configured SMTP details
       const transportConfig = {
