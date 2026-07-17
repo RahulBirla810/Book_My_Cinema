@@ -35,12 +35,11 @@ const mailSender = async (email, title, body) => {
         },
       };
 
-      // Gmail integration optimization to prevent Render port 25 blocking hang
+      // Force secure SMTPS (port 465) for Google SMTP on Render to bypass STARTTLS blocks
       if (process.env.MAIL_HOST && (process.env.MAIL_HOST.includes("gmail") || process.env.MAIL_HOST.includes("googlemail"))) {
-        delete transportConfig.host;
-        delete transportConfig.port;
-        delete transportConfig.secure;
-        transportConfig.service = "gmail";
+        transportConfig.host = "smtp.gmail.com";
+        transportConfig.port = 465;
+        transportConfig.secure = true;
       }
 
       transporter = nodemailer.createTransport(transportConfig);
