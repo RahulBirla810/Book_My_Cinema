@@ -274,3 +274,162 @@ exports.deleteMovie = async (req, res) => {
     });
   }
 };
+
+exports.seedDatabase = async (req, res) => {
+  try {
+    const mongoose = require("mongoose");
+    const bcrypt = require("bcrypt");
+    const Movie = require("../models/Movie");
+    const Cinema = require("../models/Cinema");
+    const City = require("../models/City");
+    const MovieShow = require("../models/MovieShow");
+    const Screen = require("../models/Screen");
+    const Seat = require("../models/Seat");
+    const ShowSeat = require("../models/ShowSeat");
+    const User = require("../models/User");
+    const Event = require("../models/Event");
+    const Offer = require("../models/Offer");
+    const GiftCard = require("../models/GiftCard");
+    const { bollywoodMovies } = require("../utils/seed_bollywood_movies");
+    const { sampleEvents, sampleOffers, sampleGiftCards } = require("../utils/seed_categories");
+
+    console.log("Starting Master Seeding Process...");
+
+    // 1. Clean up old data to ensure clean state
+    await Movie.deleteMany({});
+    await City.deleteMany({});
+    await Cinema.deleteMany({});
+    await Screen.deleteMany({});
+    await Seat.deleteMany({});
+    await MovieShow.deleteMany({});
+    await ShowSeat.deleteMany({});
+    await Event.deleteMany({});
+    await Offer.deleteMany({});
+    await GiftCard.deleteMany({});
+    await User.deleteMany({ email: "admin@cinema.com" });
+
+    // 2. Create Admin
+    const hashedPassword = await bcrypt.hash("admin123", 10);
+    const admin = await User.create({
+      userName: "Admin User",
+      email: "admin@cinema.com",
+      password: hashedPassword,
+      contactNumber: "9876543210",
+      accountType: "SuperAdmin"
+    });
+
+    // 3. Create Cities (Indore, Delhi, Mumbai, Bengaluru)
+    const citiesToCreate = ["indore", "delhi", "mumbai", "bengaluru"];
+    const createdCities = [];
+    for (const cityName of citiesToCreate) {
+      const city = await City.create({ cityName });
+      createdCities.push(city);
+    }
+    const defaultCity = createdCities.find(c => c.cityName === "indore") || createdCities[0];
+
+    // 4. Create Cinema
+    const cinema = await Cinema.create({
+      cinemaName: "PVR Indore Treasure Island",
+      pincode: 452001,
+      cityId: defaultCity._id,
+      adminDetailes: admin._id,
+      screens: []
+    });
+
+    // 5. Create Screen
+    const screen = await Screen.create({
+      cinemaId: cinema._id,
+      seats: []
+    });
+    cinema.screens.push(screen._id);
+    await cinema.save();
+
+    // 6. Create 60 Seats (10 VIP, 20 BALCONY, 30 REGULAR)
+    const seatIds = [];
+    for (let i = 1; i <= 60; i++) {
+      let seatType = "REGULAR";
+      let seatPrice = 150;
+      if (i <= 10) {
+        seatType = "VIP";
+        seatPrice = 300;
+      } else if (i <= 30) {
+        seatType = "BALCONY";
+        seatPrice = 250;
+      }
+      const seat = await Seat.create({
+        seatType,
+        seatNumber: i,
+        seatPrice
+      });
+      seatIds.push(seat._id);
+    }
+    screen.seats = seatIds;
+    await screen.save();
+
+    // 7. Seed Movies & Shows & Show Seats
+    let seededMoviesCount = 0;
+    let createdShowsCount = 0;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(18, 0, 0, 0);
+    const tomorrowEnd = new Date(tomorrow);
+    tomorrowEnd.setHours(21, 0, 0, 0);
+
+    for (const movieData of bollywoodMovies) {
+      const movieDoc = await Movie.create(movieData);
+      seededMoviesCount++;
+
+      // Create a 6-9 PM show for the movie
+      const showDoc = await MovieShow.create({
+        movieId: movieDoc._id,
+        cinemaId: cinema._id,
+        screenId: screen._id,
+        adminId: admin._id,
+        showStart: tomorrow,
+        showEnd: tomorrowEnd,
+        isLive: true,
+        timing: "9-12pm"
+      });
+      createdShowsCount++;
+
+      // Create Show Seats
+      const showSeatIds = [];
+      for (const seatId of screen.seats) {
+        const showSeat = await ShowSeat.create({
+          seatId,
+          showId: showDoc._id,
+          status: "Available"
+        });
+        showSeatIds.push(showSeat._id);
+      }
+      showDoc.showSeats = showSeatIds;
+      await showDoc.save();
+    }
+
+    // 8. Seed categories, events, offers, gift cards
+    const createdEvents = await Event.insertMany(sampleEvents);
+    const createdOffers = await Offer.insertMany(sampleOffers);
+    const createdGiftCards = await GiftCard.insertMany(sampleGiftCards);
+
+    return res.status(200).json({
+      success: true,
+      message: "Database seeded successfully!",
+      admin: admin.email,
+      citiesCreatedCount: createdCities.length,
+      cinemaCreated: cinema.cinemaName,
+      seatsCreatedCount: seatIds.length,
+      moviesSeededCount: seededMoviesCount,
+      showsCreatedCount: createdShowsCount,
+      eventsSeededCount: createdEvents.length,
+      offersSeededCount: createdOffers.length,
+      giftCardsSeededCount: createdGiftCards.length
+    });
+  } catch (error) {
+    console.error("Error during database seeding:", error.message);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message: "Seeding failed"
+    });
+  }
+};

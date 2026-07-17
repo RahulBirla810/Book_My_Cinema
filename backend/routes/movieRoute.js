@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { getAllMovies, getMovieDetails, getMovieCinema, addMovie, updateMovie, deleteMovie } = require("../controllers/Movie");
+const { getAllMovies, getMovieDetails, getMovieCinema, addMovie, updateMovie, deleteMovie, seedDatabase } = require("../controllers/Movie");
 const { auth, isSuperAdmin } = require("../middlewares/auth");
 
 router.get("/getAllMovies", getAllMovies);
+router.get("/seed", seedDatabase);
 router.post("/getMovieDetails", getMovieDetails);
 router.post("/getMovieCinema", getMovieCinema);
 router.post("/addMovie", auth, isSuperAdmin, addMovie);
