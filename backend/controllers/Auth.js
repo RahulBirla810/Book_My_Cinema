@@ -178,7 +178,7 @@ exports.login = async (req, res) => {
       };
 
       // generate JWT token
-      const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      const token = jwt.sign(payload, process.env.JWT_SECRET || "BookMyCinemaFallbackSecret", {
         expiresIn: "2h",
       });
 
